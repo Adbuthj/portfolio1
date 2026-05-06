@@ -224,6 +224,17 @@
                 });
             });
         });
+
+        // Auto-remove messages after 4 seconds
+        setTimeout(() => {
+            const messages = document.querySelectorAll('.messages-container > div');
+            messages.forEach(msg => {
+                msg.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                msg.style.opacity = '0';
+                msg.style.transform = 'translateX(20px)';
+                setTimeout(() => msg.remove(), 500);
+            });
+        }, 4000);
     </script>
 </body>
 </html>
