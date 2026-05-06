@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | {{ about.full_name|default:"Portfolio" }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem;">
+    <div class="grain"></div>
+    
+    <div class="container" style="max-width: 450px;">
+        <div class="glass reveal visible" style="padding: 3rem; text-align: center;">
+            <div class="logo" style="margin-bottom: 2rem; font-size: 2rem;">LOGIN</div>
+            
+            {% if messages %}
+                {% for message in messages %}
+                <div style="color: #ef4444; margin-bottom: 1.5rem; font-size: 0.9rem; background: rgba(239, 68, 68, 0.1); padding: 0.75rem; border-radius: 0.5rem; border: 1px solid rgba(239, 68, 68, 0.2);">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group" style="text-align: left;">
+                    <label>Username</label>
+                    <input type="text" name="username" class="form-input" placeholder="Enter username" required autofocus>
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Password</label>
+                    <input type="password" name="password" class="form-input" placeholder="Enter password" required>
+                </div>
+                
+                <button type="submit" class="btn" style="width: 100%; margin-top: 1rem; border: none; cursor: pointer;">
+                    Access Dashboard
+                </button>
+            </form>
+            
+            <div style="margin-top: 2rem;">
+                <p style="margin-bottom: 1rem;">
+                    <a href="{% url 'password_reset' %}" style="color: var(--accent-color); text-decoration: none; font-size: 0.85rem;">Forgot Password?</a>
+                </p>
+                <a href="{% url 'portfolio_index' %}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem;">
+                    <i class="fas fa-arrow-left"></i> Back to Site
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

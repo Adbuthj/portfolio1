@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | {{ about.full_name|default:"Portfolio" }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body style="padding-top: 100px;">
+    <div class="grain"></div>
+    
+    <nav>
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">DASHBOARD</div>
+                <div class="nav-links">
+                    <a href="{% url 'portfolio_index' %}">View Site</a>
+                    <a href="{% url 'logout' %}" style="color: #ef4444;">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="messages-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        {% for message in messages %}
+        <div class="glass" style="padding: 1rem 2rem; margin-bottom: 1rem; border-left: 5px solid var(--accent-color); color: var(--text-primary);">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <aside class="dashboard-sidebar">
+                <div class="glass">
+                    <ul class="dashboard-menu">
+                        <li><a href="#about" class="active"><i class="fas fa-user"></i> About Me</a></li>
+                        <li><a href="#projects"><i class="fas fa-code"></i> Projects</a></li>
+                        <li><a href="#skills"><i class="fas fa-lightbulb"></i> Skills</a></li>
+                        <li><a href="#experience"><i class="fas fa-briefcase"></i> Experience</a></li>
+                        <li><a href="#messages"><i class="fas fa-envelope"></i> Messages</a></li>
+                        <li style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
+                            <a href="{% url 'change_password' %}"><i class="fas fa-shield-alt"></i> Change Password</a>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+
+            <main class="dashboard-content">
+                <!-- About Section -->
+                <section id="about" style="padding: 0; margin-bottom: 4rem;">
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 2rem;">About Me Information</h2>
+                    <form method="POST" enctype="multipart/form-data" class="glass form-container">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="about">
+                        {% for field in about_form %}
+                        <div class="form-group">
+                            <label>{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                        {% endfor %}
+                        <button type="submit" class="btn">Update About Info</button>
+                    </form>
+                </section>
+
+                <!-- Projects Section -->
+                <section id="projects" style="padding: 0; margin-bottom: 4rem;">
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 2rem;">Projects</h2>
+                    <form method="POST" enctype="multipart/form-data" class="glass form-container">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="project">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            {% for field in project_form %}
+                            <div class="form-group" style="{% if field.name == 'description' %}grid-column: span 2;{% endif %}">
+                                <label>{{ field.label }}</label>
+                                {{ field }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn">Add New Project</button>
+                    </form>
+
+                    <div class="glass item-list">
+                        {% for project in projects %}
+                        <div class="item-row">
+                            <div>
+                                <h4 style="color: var(--accent-color);">{{ project.title }}</h4>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary);">{{ project.technologies }}</p>
+                            </div>
+                            <a href="{% url 'delete_item' 'project' project.id %}" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+                        </div>
+                        {% empty %}
+                        <p style="padding: 2rem; text-align: center; color: var(--text-secondary);">No projects added yet.</p>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Skills Section -->
+                <section id="skills" style="padding: 0; margin-bottom: 4rem;">
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 2rem;">Skills</h2>
+                    <form method="POST" class="glass form-container">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="skill">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                            {% for field in skill_form %}
+                            <div class="form-group">
+                                <label>{{ field.label }}</label>
+                                {{ field }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn">Add Skill</button>
+                    </form>
+
+                    <div class="glass item-list">
+                        {% for skill in skills %}
+                        <div class="item-row">
+                            <div>
+                                <span style="color: var(--accent-color); font-weight: 600;">{{ skill.name }}</span>
+                                <span style="margin-left: 1rem; font-size: 0.8rem; opacity: 0.6;">{{ skill.category }} ({{ skill.proficiency }}%)</span>
+                            </div>
+                            <a href="{% url 'delete_item' 'skill' skill.id %}" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Experience Section -->
+                <section id="experience" style="padding: 0; margin-bottom: 4rem;">
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 2rem;">Experience</h2>
+                    <form method="POST" class="glass form-container">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="experience">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            {% for field in experience_form %}
+                            <div class="form-group" style="{% if field.name == 'description' %}grid-column: span 2;{% endif %}">
+                                <label>{{ field.label }}</label>
+                                {{ field }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn">Add Experience</button>
+                    </form>
+
+                    <div class="glass item-list">
+                        {% for exp in experiences %}
+                        <div class="item-row">
+                            <div>
+                                <h4 style="color: var(--accent-color);">{{ exp.title }}</h4>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary);">{{ exp.company }} | {{ exp.period }}</p>
+                            </div>
+                            <a href="{% url 'delete_item' 'experience' exp.id %}" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Messages Section -->
+                <section id="messages" style="padding: 0; margin-bottom: 4rem;">
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 2rem;">Messages</h2>
+                    <div class="glass item-list">
+                        {% for msg in messages_list %}
+                        <div style="padding: 1.5rem; border-bottom: 1px solid var(--glass-border);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <h4 style="color: var(--accent-color);">{{ msg.subject }}</h4>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">{{ msg.created_at|date:"M d, Y H:i" }}</span>
+                            </div>
+                            <p style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem;">From: {{ msg.name }} ({{ msg.email }})</p>
+                            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">{{ msg.message }}</p>
+                        </div>
+                        {% empty %}
+                        <p style="padding: 2rem; text-align: center; color: var(--text-secondary);">No messages yet.</p>
+                        {% endfor %}
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Simple sidebar navigation highlighting
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.dashboard-menu a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth scroll
+        navLinks.forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

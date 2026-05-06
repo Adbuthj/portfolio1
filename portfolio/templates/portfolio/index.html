@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ about.full_name|default:"My Portfolio" }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="grain"></div>
+    
+    <nav>
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">{{ about.full_name|default:"PORTFOLIO" }}</div>
+                <div class="nav-links">
+                    <a href="#">Home</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#skills">Skills</a>
+                    <a href="#experience">Experience</a>
+                    <a href="#contact">Contact</a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" style="color: var(--accent-color);">Dashboard</a>
+                    <a href="{% url 'logout' %}" style="opacity: 0.7;">Logout</a>
+                    {% else %}
+                    <a href="{% url 'login' %}" style="opacity: 0.7;">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="messages-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        {% for message in messages %}
+        <div class="glass" style="padding: 1rem 2rem; margin-bottom: 1rem; border-left: 5px solid var(--accent-color); color: var(--text-primary);">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <header>
+        <div class="container">
+            {% if about.profile_image %}
+                <img src="{{ about.profile_image.url }}" alt="{{ about.full_name }}" class="hero-img">
+            {% else %}
+                <div class="hero-img glass" style="display: flex; align-items: center; justify-content: center; background: var(--accent-gradient);">
+                    <i class="fas fa-user fa-4x" style="color: white;"></i>
+                </div>
+            {% endif %}
+            <h1>{{ about.full_name|default:"Build Your Vision." }}</h1>
+            <p class="role" style="font-weight: 600; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                {{ about.role|default:"Full Stack Developer & Designer" }}
+            </p>
+            <p class="bio" style="max-width: 700px; margin: 0 auto 3rem; color: var(--text-secondary); font-size: 1.1rem; line-height: 1.8;">
+                {{ about.bio|default:"I craft high-performance, beautiful digital experiences that combine technical excellence with artistic design." }}
+            </p>
+            <div style="display: flex; gap: 1.5rem; justify-content: center;">
+                <a href="#projects" class="btn">View My Work</a>
+                <a href="#contact" class="btn" style="background: transparent; border: 1px solid var(--glass-border);">Get In Touch</a>
+            </div>
+            
+            <div class="scroll-indicator" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); animation: bounce 2s infinite;">
+                <i class="fas fa-chevron-down" style="color: var(--text-secondary); font-size: 1.2rem;"></i>
+            </div>
+        </div>
+    </header>
+
+    <section id="projects">
+        <div class="container">
+            <h2 class="section-title">Featured Projects</h2>
+            <div class="projects-grid">
+                {% for project in projects %}
+                <div class="project-card glass reveal">
+                    <div class="project-img-container">
+                        {% if project.image %}
+                        <img src="{{ project.image.url }}" alt="{{ project.title }}" class="project-img">
+                        {% else %}
+                        <div style="width: 100%; height: 100%; background: var(--accent-gradient); opacity: 0.1;"></div>
+                        {% endif %}
+                    </div>
+                    <div class="project-info">
+                        <h3 class="project-title">{{ project.title }}</h3>
+                        <p class="project-tech" style="letter-spacing: 1px; font-weight: 500;">{{ project.technologies }}</p>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7;">{{ project.description|truncatewords:20 }}</p>
+                        {% if project.link %}
+                        <a href="{{ project.link }}" target="_blank" style="color: var(--accent-color); text-decoration: none; font-weight: 600; font-size: 0.9rem;">View Project <i class="fas fa-external-link-alt" style="margin-left: 5px;"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p style="text-align: center; grid-column: 1/-1; color: var(--text-secondary);">Projects will appear here once added in the admin panel.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="glass reveal" style="border-radius: 0; margin: 4rem 0; background: rgba(255,255,255,0.02);">
+        <div class="container">
+            <h2 class="section-title">Skills & Expertise</h2>
+            <div class="skills-container">
+                {% for skill in skills %}
+                <div class="skill-tag">
+                    {{ skill.name }}
+                </div>
+                {% empty %}
+                <p style="color: var(--text-secondary);">Skills will appear here once added in the admin panel.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section id="experience">
+        <div class="container">
+            <h2 class="section-title">Experience</h2>
+            <div class="timeline">
+                {% for exp in experiences %}
+                <div class="timeline-item glass reveal">
+                    <h3 style="color: var(--accent-color); margin-bottom: 0.5rem; font-size: 1.4rem;">{{ exp.title }}</h3>
+                    <p style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">{{ exp.company }}</p>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="far fa-calendar-alt"></i> {{ exp.period }}
+                    </p>
+                    <p style="color: var(--text-secondary); line-height: 1.8;">{{ exp.description }}</p>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: var(--text-secondary);">Experience history will appear here.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            
+            <div class="contact-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4rem; margin-bottom: 4rem; text-align: left;">
+                <div class="contact-info">
+                    <h3 style="color: var(--accent-color); margin-bottom: 1.5rem;">Let's Connect</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                        Interested in working together? Fill out the form or reach out via social media.
+                    </p>
+                    <div class="social-links" style="justify-content: flex-start; gap: 1.5rem;">
+                        {% if about.email %}
+                        <a href="mailto:{{ about.email }}"><i class="fas fa-envelope"></i></a>
+                        {% endif %}
+                        {% if about.github %}
+                        <a href="{{ about.github }}" target="_blank"><i class="fab fa-github"></i></a>
+                        {% endif %}
+                        {% if about.linkedin %}
+                        <a href="{{ about.linkedin }}" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        {% endif %}
+                        {% if about.twitter %}
+                        <a href="{{ about.twitter }}" target="_blank"><i class="fab fa-twitter"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <form method="POST" class="glass" style="padding: 2.5rem;">
+                    {% csrf_token %}
+                    <div style="margin-bottom: 1.5rem;">
+                        <input type="text" name="name" placeholder="Your Name" required 
+                               style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <input type="email" name="email" placeholder="Your Email" required 
+                               style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <input type="text" name="subject" placeholder="Subject" required 
+                               style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <textarea name="message" placeholder="Message" rows="5" required 
+                                  style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white;"></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; border: none; cursor: pointer;">Send Message</button>
+                </form>
+            </div>
+
+            <p style="color: var(--text-secondary);">&copy; 2026 {{ about.full_name|default:"Portfolio" }}. All rights reserved.</p>
+            <p style="margin-top: 1rem; font-size: 0.8rem;">
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" style="color: var(--accent-color); text-decoration: none; opacity: 0.8;">Dashboard</a> |
+                <a href="{% url 'logout' %}" style="color: var(--text-secondary); text-decoration: none; opacity: 0.5;">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" style="color: var(--text-secondary); text-decoration: none; opacity: 0.5;">Admin Login</a>
+                {% endif %}
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Reveal elements on scroll
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === "#") return;
+                
+                document.querySelector(targetId).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
