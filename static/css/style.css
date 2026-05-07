@@ -105,6 +105,15 @@ nav {
     color: var(--text-primary);
 }
 
+.mobile-menu-btn {
+    display: none;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
 /* Scroll Reveal */
 .reveal {
     opacity: 0;
@@ -362,8 +371,77 @@ footer {
 
 /* Responsive */
 @media (max-width: 768px) {
-    h1 { font-size: 2.5rem; }
-    .hero-img { width: 140px; height: 140px; }
+    header {
+        height: auto;
+        padding: 120px 0 60px;
+    }
+
+    h1 { 
+        font-size: 2.8rem; 
+        line-height: 1.2;
+    }
+    
+    .hero-img { 
+        width: 150px; 
+        height: 150px; 
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: var(--nav-height);
+        left: 0;
+        width: 100%;
+        height: 0;
+        background: rgba(3, 7, 18, 0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 0;
+        gap: 2rem;
+        overflow: hidden;
+        transition: all 0.4s ease-in-out;
+        z-index: 999;
+    }
+
+    .nav-links.active {
+        height: calc(100vh - var(--nav-height));
+        padding-top: 4rem;
+    }
+
+    .nav-links a {
+        font-size: 1.2rem;
+    }
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .timeline {
+        padding-left: 1.5rem;
+    }
+    
+    .timeline-item {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 2.2rem; }
+    .logo { font-size: 1.2rem; }
 }
 /* Dashboard & Form Styles */
 .dashboard-grid {
