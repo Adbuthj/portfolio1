@@ -67,7 +67,9 @@ def dashboard(request):
         form_type = request.POST.get('form_type')
         
         if form_type == 'about':
-            form = AboutForm(request.POST, request.FILES, instance=about) if about else AboutForm(request.POST, request.FILES)
+            # Use the existing about record or create a new one if none exists
+            about_record = About.objects.first()
+            form = AboutForm(request.POST, request.FILES, instance=about_record)
             if form.is_valid():
                 form.save()
                 messages.success(request, 'About information updated!')
