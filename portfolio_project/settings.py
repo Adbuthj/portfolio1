@@ -98,11 +98,11 @@ if DATABASE_URL:
             conn_health_checks=True,
         )
     }
-elif os.environ.get('VERCEL') == '1' or os.environ.get('RENDER') == '1':
-    # If we are on Vercel/Render but forgot to add the database variable
+elif os.environ.get('VERCEL') == '1' or os.environ.get('RENDER') == '1' or os.environ.get('RAILWAY_ENVIRONMENT'):
+    # If we are on Vercel/Render/Railway but forgot to add the database variable
     raise ImproperlyConfigured(
         "DATABASE_URL environment variable is missing! "
-        "You must add your PostgreSQL connection string to your Vercel/Render Environment Variables. "
+        "You must add your PostgreSQL connection string to your Vercel/Render/Railway Environment Variables. "
         "SQLite will not work in production."
     )
 else:
