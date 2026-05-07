@@ -14,6 +14,7 @@ import os
 import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 load_dotenv()
 
@@ -87,13 +88,23 @@ WSGI_APPLICATION = 'portfolio_project.wsgi.application'
 
 # Database configuration
 # On Vercel/Render, we MUST use a real database (Postgres) because the filesystem is read-only.
-if os.environ.get('DATABASE_URL'):
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(
+            default=DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
         )
     }
+elif os.environ.get('VERCEL') == '1' or os.environ.get('RENDER') == '1':
+    # If we are on Vercel/Render but forgot to add the database variable
+    raise ImproperlyConfigured(
+        "DATABASE_URL environment variable is missing! "
+        "You must add your PostgreSQL connection string to your Vercel/Render Environment Variables. "
+        "SQLite will not work in production."
+    )
 else:
     # Local development fallback to SQLite
     DATABASES = {
@@ -184,6 +195,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your-email@gmail.com'  # Change this
-EMAIL_HOST_PASSWORD = 'your-app-password'  # Change this
-DEFAULT_FROM_EMAIL = 'Portfolio Admin <your-email@gmail.com>'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'your-email@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'your-app-password')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', f'Portfolio Admin <{EMAIL_HOST_USER}>')
